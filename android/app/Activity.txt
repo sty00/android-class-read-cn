@@ -1,0 +1,37 @@
+/** 
+* 当当前的window(窗口)获取或者失去焦点的时候会回调这个方法.请注意,这个焦点和view焦点 
+* 是分离的,为了获取按键事件,view和view所在的窗口都必须获得焦点.如果一个窗口处于你的输入 
+* 事件的最上层,那么该窗口将失去焦点而view的焦点会保持不变. 
+* Called when the window containing this view gains or loses focus.  Note 
+* that this is separate from view focus: to receive key events, both 
+* your view and its window must have focus.  If a window is displayed 
+* on top of yours that takes input focus, then your own window will lose 
+* focus but the view focus will remain unchanged. 
+* 
+* @param hasWindowFocus True if the window containing this view now has 
+*        focus, false otherwise. 
+*/  
+ublic void onWindowFocusChanged(boolean hasWindowFocus) {  
+//获取软键盘  
+   InputMethodManager imm = InputMethodManager.peekInstance();  
+   if (!hasWindowFocus) {  
+       if (isPressed()) {     
+        //键盘有按下事件,则强制将该view包含的所有子控件全部setPressed()设置为false  
+           setPressed(false);  
+       }  
+       if (imm != null && (mPrivateFlags & FOCUSED) != 0) {  
+        //这是一个隐藏的方法(带@hide标签),当view失去焦点时会调用该方法  
+           imm.focusOut(this);  
+       }  
+       //移除长按事件回调的接口方法  
+       removeLongPressCallback();  
+       //移除轻触探测器,源码中叫 "Remove the tap detection timer."  
+       removeTapCallback();  
+       //当焦点(fucos)从按下变成取消的时候会调用,属于隐藏方法  
+       onFocusLost();  
+   } else if (imm != null && (mPrivateFlags & FOCUSED) != 0) {  
+       //当view获得焦点时调用该方法,属于隐藏方法  
+       imm.focusIn(this);  
+   }  
+   //强制view刷新drawable state,并且会回调drawableStateChanged()方法  
+   refreshDrawableState();  
