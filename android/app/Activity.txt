@@ -11,7 +11,7 @@
 * @param hasWindowFocus True if the window containing this view now has 
 *        focus, false otherwise. 
 */  
-ublic void onWindowFocusChanged(boolean hasWindowFocus) {  
+public void onWindowFocusChanged(boolean hasWindowFocus) {  
 //获取软键盘  
    InputMethodManager imm = InputMethodManager.peekInstance();  
    if (!hasWindowFocus) {  
@@ -35,3 +35,36 @@ ublic void onWindowFocusChanged(boolean hasWindowFocus) {
    }  
    //强制view刷新drawable state,并且会回调drawableStateChanged()方法  
    refreshDrawableState();  
+
+/** 
+ * Called after {@link #onRestoreInstanceState}, {@link #onRestart}, or 
+ * {@link #onPause}, for your activity to start interacting with the user. 
+ * This is a good place to begin animations, open exclusive-access devices 
+ * (such as the camera), etc. 
+ *  
+ * 从下面这段官方注释中,这一段"Use {@link #onWindowFocusChanged} to know for certain that..." 
+ * 可知道,在onResume()方法之后会调用onWindowFocusChanged()方法~ 
+ *  
+ * <p>Keep in mind that onResume is not the best indicator that your activity 
+ * is visible to the user; a system window such as the keyguard may be in 
+ * front.  Use {@link #onWindowFocusChanged} to know for certain that your 
+ * activity is visible to the user (for example, to resume a game). 
+ * 
+ * <p><em>Derived classes must call through to the super class's 
+ * implementation of this method.  If they do not, an exception will be 
+ * thrown.</em></p> 
+ *  
+ * @see #onRestoreInstanceState 
+ * @see #onRestart 
+ * @see #onPostResume 
+ * @see #onPause 
+ */  
+protected void onResume() {  
+    getApplication().dispatchActivityResumed(this);  
+    mCalled = true;  
+}  
+
+
+
+
+
